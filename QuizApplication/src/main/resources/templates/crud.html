@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<h1>「○×クイズ」アプリ：CRUD</h1>
+
+	<!-- QuizControllerクラスのshowListで設定したtitleを表示 -->
+	<h3 th:text = "${title}">タイトル</h3>
+
+	<!-- /* 登録・更新完了コメント */ -->
+	<p th:if = "${complete}" th:text = "${complete}" style = "color:blue"></p>
+	<!-- /* ▼▼▼ Form ▼▼▼ */ -->
+	<!-- ・QuizFormクラスのnewQuizの値により分岐（true: Insert false: Update）
+		 ★このQuizFormはどこから渡される？
+		 formタグ内で、quizFormのフィールドは「*{フィールド名}」で指定出来る。
+	-->
+	<form method = "POST"
+		th:action = "${quizForm.newQuiz}? @{/quiz/insert} : @{/quiz/update}"
+		th:object = "${quizForm}">
+		
+		<!-- 以下、フィールドごとに入力フォーム・エラー表示欄を表示
+		     ・入力欄の内容はth:field = "*{フィールド名}"でバックエンド側に渡す
+		     ・エラーの有無はth:if = "${#fields.hasErrors('question')}"で判定
+		     ・エラー内容は
+		-->
+		<!-- Quizクラスのquestionフィールド -->
+		<label>クイズの内容：</label>
+		<textarea rows = "5" cols = "50" th:field = "*{question}"></textarea>
+		<br>
+		<div th:if = "${#fields.hasErrors('question')}"
+		 th:errors = "*{question}" style = "color:red"></div>
+		<br>
+		
+		<!-- Quizクラスのanswerフィールド -->
+		<label>クイズの回答：</label>
+		<input type = "radio" value = "true" th:field = "*{answer}">「○」
+		<input type = "radio" value = "false" th:field = "*{answer}"> 「×」
+		<br>
+		<div th:if = "${#fields.hasErrors('answer')}"
+		 th:errors = "*{answer}" style = "color:red"></div>
+		<br>
+		
+		<!-- Quizクラスのauthorフィールド -->
+		<lable>作成者：</lable>
+		<input type = "text" th:field = "*{author}">
+		<br>
+		<div th:if = "${#fields.hasErrors('author')}"
+		 th:errors = "*{author}" style = "color:red"></div>
+		
+		<input th:if = "*{id}" type = "hidden" th:field = "*{id}">
+		<input type = "submit" value = "送信">
+	</form> 
+	<!-- /* △△△ Form △△△ */ -->
+	<br>
+	<!-- /* ここまで上部エリア */ -->
+	
+	<!-- /* ここから下部エリア */ -->
+	<!-- /* ▼▼▼ 新規登録時（quizForm.newQuiz = trueの場合）のみ表示 ▼▼▼ */ -->
+	<div th:if = "${quizForm.newQuiz}" style = "margin: 10px">
+		<h3>登録クイズ一覧：<a th:href = "@{quiz/play}">プレイ</a><br></h3>
+		<!-- /* 削除完了コメント */ -->
+		<!-- delcomplete,msgはQuizControllerクラスのdeleteメソッドで設定する。 -->
+		<p th:if = "${delcomplete}" th:text = "${delcomplete}" style = "color:blue"></p>
+		<p th:if = "${msg}" th:text = "${msg}" style = "color:red"></p>
+		<!-- /* ▼▼▼ クイズ情報が1件でもあれば表示 ▼▼▼ */ -->
+		<table border = "1" th:unless = "${#lists.isEmpty(list)}"
+		 style = "table-layout: fixed;">
+			<tr>
+				<th>ID</th>
+				<th>内容</th>
+				<th>解答</th>
+				<th>作成者</th>
+				<th>編集</th>
+				<th>削除</th>
+			</tr>
+			<tr th:each = "obj : ${list}" align = "center">
+				<td th:text = "${obj.id}"></td>
+				<td th:text = "${obj.question}" align = "left"></td>
+				<td th:text = "${obj.answer} == true?'○':'×'"></td>
+				<td th:text = "${obj.author}"></td>
+				<!--/* 編集ボタン */-->
+				<td>
+					<form method = "GET" th:action = "@{/quiz/{id}(id = ${obj.id})}">
+						<input type = "submit" value = "編集"> 
+					</form>
+				</td>
+				<!--/* 削除ボタン */-->
+				<td>
+					<form method = "POST" th:action = "@{/quiz/delete}">
+						<input type = "hidden" name = "id" th:value = "${obj.id}">
+						<input type = "submit" value = "削除"> 
+					</form>
+				</td>
+			</tr>
+		</table>
+		<!-- /* △△△ クイズ情報が1件でもあれば表示 △△△ */ -->
+		
+		<!-- /* ▼▼▼ クイズ情報が1件も無い場合に表示 ▼▼▼ */ -->
+		<p th:if"${#lists.isEmpty(list)}">登録されているクイズはありません。</p>
+		<!-- /* △△△ クイズ情報が1件も無い場合に表示 △△△ */ -->
+	</div>
+	<!-- /* △△△ 新規登録時（quizForm.newQuiz = trueの場合）のみ表示 △△△ */ -->
+	
+	<!-- /* ▼▼▼ 新規登録以外の場合に表示 ▼▼▼ */ -->
+	<p th:unless = "${quizForm.newQuiz}">
+		<a href = "#" th:href = "@{/quiz}">CRUD画面に戻る</a>
+	</p>
+	<!-- /* △△△ 新規登録以外の場合に表示 △△△ */ -->
+
+</body>
+</html>
