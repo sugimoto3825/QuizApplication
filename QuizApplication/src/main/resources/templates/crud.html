@@ -45,6 +45,24 @@
 		 th:errors = "*{answer}" style = "color:red"></div>
 		<br>
 		
+		<style>
+			/*
+			<label>DUMMY：</label>
+			<br>
+			<!-- th:fieldが同じだと、同じグループのラジオボタンとみなされる -->
+			<input type = "radio" name = "select1" value = "true" th:field = "*{answer}"> 「□」
+			<input type = "radio" name = "select1" value = "false" th:field = "*{answer}"> 「△」
+			<br>
+			<!-- th:fieldを指定しない場合、name属性で別グループとして扱える -->
+			<input type = "radio" name = "select2" value = "true"> 「□」
+			<input type = "radio" name = "select2" value = "false"> 「△」
+			<br>
+			<input type = "radio" name = "select3" value = "true"> 「※」
+			<input type = "radio" name = "select3" value = "false"> 「＊」
+			<br>
+			*/
+		</style>
+
 		<!-- Quizクラスのauthorフィールド -->
 		<lable>作成者：</lable>
 		<input type = "text" th:field = "*{author}">
